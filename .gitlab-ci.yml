@@ -1,0 +1,34 @@
+
+stages:
+    - check
+    - deploy
+    
+cache:
+  paths:
+    - vendor/
+
+lint_php:
+    stage: check
+    image: cyberpearuk/php-build-docker
+    script: phplint
+
+tag:
+    stage: deploy
+    image: docker.jbuncle.co.uk/jbuncle/php-autosemver
+    script:
+        - composer global config http-basic.nexus.jbuncle.co.uk composer-publisher $NEXUS_PASS 
+        - tag
+    only:
+        refs:
+            - master
+
+deploy_tag:
+    stage: deploy
+    image: cyberpearuk/php-build-docker
+    script:
+        - rm -rf nbproject
+        - composer global config http-basic.nexus.jbuncle.co.uk composer-publisher $NEXUS_PASS 
+        - composer nexus-push --url=https://nexus.jbuncle.co.uk/repository/composer-private/ --username=composer-publisher --password=$NEXUS_PASS $CI_COMMIT_TAG
+    only:
+        - tags
+
