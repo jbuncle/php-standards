@@ -12,8 +12,6 @@
             <property name="enableEachParameterAndReturnInspection" value="1"/>
         </properties>
     </rule>
-        
-    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHintSpacing" />
     
     <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
         <properties>
