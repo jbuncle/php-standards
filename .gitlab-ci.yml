@@ -7,11 +7,6 @@ cache:
   paths:
     - vendor/
 
-lint_php:
-    stage: check
-    image: cyberpearuk/php-build-docker
-    script: phplint
-
 tag:
     stage: deploy
     image: docker.jbuncle.co.uk/jbuncle/php-autosemver
