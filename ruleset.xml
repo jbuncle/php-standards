@@ -5,6 +5,16 @@
     <exclude-pattern>*.js</exclude-pattern>
     <exclude-pattern>*.css</exclude-pattern>
 
+    <rule ref="SlevomatCodingStandard.TypeHints">
+        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.UselessReturnAnnotation"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.UselessParameterAnnotation"/>
+        <properties>
+            <property name="enableEachParameterAndReturnInspection" value="1"/>
+        </properties>
+    </rule>
+        
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHintSpacing" />
+    
     <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
         <properties>
             <property name="newlinesCountBetweenOpenTagAndDeclare" value="0"/>
