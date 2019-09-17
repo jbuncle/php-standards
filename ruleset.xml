@@ -8,6 +8,7 @@
     <rule ref="SlevomatCodingStandard.TypeHints">
         <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.UselessReturnAnnotation"/>
         <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.UselessParameterAnnotation"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint"/>
         <properties>
             <property name="enableEachParameterAndReturnInspection" value="1"/>
         </properties>
