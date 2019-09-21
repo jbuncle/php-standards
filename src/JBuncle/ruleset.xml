@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<ruleset name="JBuncle">
+    <rule ref="JBuncle.Commenting.FileComment" />
+    <!--<rule ref="JBuncle.Commenting.ClassComment" />-->
+</ruleset>
