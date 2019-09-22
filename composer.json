@@ -8,6 +8,11 @@
             "email": "jbuncle@hotmail.com"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "JBuncle\\": "src/JBuncle/"
+        }
+    },
     "require": {
         "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
         "slevomat/coding-standard": "^5.0",

@@ -1,0 +1,64 @@
+<?php declare(strict_types=1);
+namespace JBuncle\Helpers;
+
+/**
+ * Util
+ *
+ * @author jbuncle
+ */
+class Util {
+
+    public static function skipWhitespace(array $tokens, int $position): int {
+
+        while ($tokens[$position]['type'] === 'T_WHITESPACE') {
+            $position++;
+        }
+
+        return $position;
+    }
+
+    public static function find(array $tokens, array $types, int $from, int $to): ?int {
+        for ($index = $from; $index < $to; $index++) {
+            if (\in_array($tokens[$index]['type'], $types)) {
+                return $index;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Skip over declare strict call.
+     *
+     * @param array $tokens
+     * @param int $position
+     * @return int
+     */
+    public static function skipDeclaration(array $tokens, int $position): int {
+
+        $declarationTokens = [
+            'T_DECLARE', 'T_OPEN_PARENTHESIS', 'T_STRING',
+            'T_EQUAL', 'T_LNUMBER', 'T_CLOSE_PARENTHESIS', 'T_SEMICOLON'
+        ];
+
+        $tokensCount = count($tokens);
+        $declarationTokensCount = count($declarationTokens);
+
+        $startPosition = $position;
+        while ($position < $tokensCount && ($position - $startPosition) < $declarationTokensCount) {
+            $currentTokenType = $tokens[$position]['type'];
+            //Ignore whitespace
+            if ($currentTokenType !== 'T_WHITESPACE') {
+                if ($currentTokenType !== $declarationTokens[$position - $startPosition]) {
+                    // Fail
+                    return $startPosition;
+                }
+            }
+
+            $position++;
+        }
+
+        return $position;
+    }
+
+}
