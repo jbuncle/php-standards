@@ -59,7 +59,12 @@ class FileCommentSniff implements Sniff {
 
         // Check comment string
         $content = $tokens[$commentStringPos]['content'];
-        if ($content !== "Copyright (C) 2019 CyberPear (https://www.cyberpear.co.uk) - All Rights Reserved") {
+        $allowedCopyrights = [
+            "Copyright (C) 2019 CyberPear (https://www.cyberpear.co.uk) - All Rights Reserved",
+            "Copyright (C) 2019 James Buncle (https://www.jbuncle.co.uk) - All Rights Reserved",
+        ];
+        
+        if (!in_array($content, $allowedCopyrights)) {
             $this->handleBadFileCommentString($phpcsFile, $commentStart);
         }
 
