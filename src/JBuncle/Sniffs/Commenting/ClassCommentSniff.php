@@ -4,7 +4,6 @@ namespace JBuncle\Sniffs\Commenting;
 use JBuncle\Helpers\Util;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
-use function count;
 
 /**
  * FileCommentSniff
@@ -34,7 +33,11 @@ class ClassCommentSniff implements Sniff {
     public function process(File $phpcsFile, $stackPtr) {
         $tokens = $phpcsFile->getTokens();
 
-        $prevTokenIndex = Util::skipBack($tokens, $stackPtr - 1, ['T_WHITESPACE']);
+        $prevTokenIndex = Util::skipBack($tokens, $stackPtr - 1, [
+            'T_WHITESPACE',
+            'T_ABSTRACT',
+            'T_FINAL',
+        ]);
         $prevToken = $tokens[$prevTokenIndex];
 
         if ($prevToken['type'] !== "T_DOC_COMMENT_CLOSE_TAG") {
@@ -45,7 +48,10 @@ class ClassCommentSniff implements Sniff {
 
         $commentStart = Util::searchBack($tokens, $stackPtr, ['T_COMMENT', 'T_DOC_COMMENT_OPEN_TAG']);
 
-        $commentStringPos = Util::searchForward($tokens, $commentStart, ['T_DOC_COMMENT_STRING', 'T_DOC_COMMENT_CLOSE_TAG']);
+        $commentStringPos = Util::searchForward($tokens, $commentStart, [
+                    'T_DOC_COMMENT_STRING',
+                    'T_DOC_COMMENT_CLOSE_TAG',
+        ]);
 
         if ($tokens[$commentStringPos]['type'] !== 'T_DOC_COMMENT_STRING') {
             // No comment string
