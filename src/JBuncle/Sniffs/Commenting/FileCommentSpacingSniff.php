@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace JBuncle\Sniffs\Commenting;
 
+use JBuncle\Helpers\Util;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use const T_DOC_COMMENT_WHITESPACE;
@@ -13,28 +14,29 @@ use function count;
  */
 class FileCommentSpacingSniff implements Sniff {
 
-    public function register() {
+    /**
+     *
+     * @return array<mixed>
+     */
+    public function register(): array {
         return [T_DOC_COMMENT_WHITESPACE];
     }
 
-    private function skipOver(array $tokens, int $start, string $type): int {
-
-        $count = count($tokens);
-        for ($index = $start; $index < $count; $index++) {
-            if ($tokens[$index]['type'] !== $type) {
-                return $index;
-            }
-        }
-
-        // Not found
-        return $start;
-    }
-
-    public function process(File $phpcsFile, $stackPtr): void {
+    /**
+     * Process.
+     *
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+     *
+     * @param File $phpcsFile
+     * @param int  $stackPtr
+     *
+     * @return void|int
+     */
+    public function process(File $phpcsFile, $stackPtr) {
         $tokens = $phpcsFile->getTokens();
         $currentToken = $tokens[$stackPtr];
 
-        $nextToken = $tokens[$this->skipOver($tokens, $stackPtr, 'T_DOC_COMMENT_WHITESPACE')];
+        $nextToken = $tokens[Util::skipForward($tokens, $stackPtr, ['T_DOC_COMMENT_WHITESPACE'])];
         if (in_array($nextToken['type'], ['T_DOC_COMMENT_STAR', 'T_DOC_COMMENT_CLOSE_TAG'])) {
             // Skip whitespace before comment star
             return;

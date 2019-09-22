@@ -6,16 +6,30 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * Description of FileCommentSniff
+ * FileCommentSniff
  *
  * @author jbuncle
  */
 class FileCommentStartSniff implements Sniff {
 
-    public function register() {
+    /**
+     *
+     * @return array<mixed>
+     */
+    public function register(): array {
         return [T_OPEN_TAG];
     }
 
+    /**
+     * Process.
+     *
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+     *
+     * @param File $phpcsFile
+     * @param int  $stackPtr
+     *
+     * @return void|int
+     */
     public function process(File $phpcsFile, $stackPtr) {
         $tokens = $phpcsFile->getTokens();
 

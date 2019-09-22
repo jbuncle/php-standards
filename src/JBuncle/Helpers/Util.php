@@ -8,6 +8,56 @@ namespace JBuncle\Helpers;
  */
 class Util {
 
+    /**
+     * Go backward until we find a token that doesn't match the ones defined.
+     *
+     * @param array<mixed> $tokens
+     * @param int $position
+     * @param array $types
+     * @return int
+     */
+    public static function skipBack(array $tokens, int $position, array $types): int {
+        for ($index = $position; $index > 0; $index--) {
+            $currentToken = $tokens[$index];
+            if (!in_array($currentToken['type'], $types)) {
+                return $index;
+            }
+        }
+    }
+
+    public static function skipForward(array $tokens, int $position, array $types): ?int {
+        $tokenCount = count($tokens);
+        for ($index = $position; $index < $tokenCount; $index++) {
+            if (!in_array($tokens[$index]['type'], $types)) {
+                return $index;
+            }
+        }
+
+        return null;
+    }
+
+    public static function searchBack(array $tokens, int $position, array $types): ?int {
+        for ($index = $position; $index > 0; $index--) {
+            $currentToken = $tokens[$index];
+            if (in_array($currentToken['type'], $types)) {
+                return $index;
+            }
+        }
+
+        return null;
+    }
+
+    public static function searchForward(array $tokens, int $position, array $types): ?int {
+        $tokenCount = count($tokens);
+        for ($index = $position; $index < $tokenCount; $index++) {
+            if (in_array($tokens[$index]['type'], $types)) {
+                return $index;
+            }
+        }
+
+        return null;
+    }
+
     public static function skipWhitespace(array $tokens, int $position): int {
 
         while ($tokens[$position]['type'] === 'T_WHITESPACE') {

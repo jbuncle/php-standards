@@ -13,10 +13,24 @@ use function count;
  */
 class FileCommentSniff implements Sniff {
 
-    public function register() {
+    /**
+     *
+     * @return array<mixed>
+     */
+    public function register(): array {
         return [T_OPEN_TAG];
     }
 
+    /**
+     * Process.
+     *
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+     *
+     * @param File $phpcsFile
+     * @param int  $stackPtr
+     *
+     * @return void|int
+     */
     public function process(File $phpcsFile, $stackPtr) {
         $tokens = $phpcsFile->getTokens();
         $commentStart = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
@@ -71,8 +85,8 @@ class FileCommentSniff implements Sniff {
     }
 
     private function handleMissingFileCommentString(File $phpcsFile, int $commentStart): void {
-        $phpcsFile->addError('Missing file doc comment', $$commentStart, 'Missing');
-        $phpcsFile->recordMetric($$commentStart, 'File has doc comment', 'no');
+        $phpcsFile->addError('Missing file doc comment', $commentStart, 'Missing');
+        $phpcsFile->recordMetric($commentStart, 'File has doc comment', 'no');
     }
 
 }
