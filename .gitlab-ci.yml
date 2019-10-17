@@ -19,7 +19,7 @@ phpcs:
     script:
         - composer global config http-basic.nexus.jbuncle.co.uk composer-publisher $NEXUS_PASS 
         - composer install
-        - vendor/bin/phpcs--config-set installed_paths ./
+        - vendor/bin/phpcs --config-set installed_paths ./
         - vendor/bin/phpcs -n -s --standard=php-standards ./src
 
 phan:
