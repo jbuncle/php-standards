@@ -11,20 +11,31 @@ class Util {
     /**
      * Go backward until we find a token that doesn't match the ones defined.
      *
-     * @param array<mixed> $tokens
+     * @param array<int, array<string, mixed>> $tokens
      * @param int $position
-     * @param array $types
-     * @return int
+     * @param array<string> $types
+     *
+     * @return ?int
      */
-    public static function skipBack(array $tokens, int $position, array $types): int {
+    public static function skipBack(array $tokens, int $position, array $types): ?int {
         for ($index = $position; $index > 0; $index--) {
             $currentToken = $tokens[$index];
             if (!in_array($currentToken['type'], $types)) {
                 return $index;
             }
         }
+
+        return null;
     }
 
+    /**
+     *
+     * @param array<int, array<string, mixed>> $tokens
+     * @param int $position
+     * @param array<string> $types
+     *
+     * @return int|null
+     */
     public static function skipForward(array $tokens, int $position, array $types): ?int {
         $tokenCount = count($tokens);
         for ($index = $position; $index < $tokenCount; $index++) {
@@ -36,6 +47,14 @@ class Util {
         return null;
     }
 
+    /**
+     *
+     * @param array<int, array<string, mixed>>  $tokens
+     * @param int $position
+     * @param array<string> $types
+     *
+     * @return int|null
+     */
     public static function searchBack(array $tokens, int $position, array $types): ?int {
         for ($index = $position; $index > 0; $index--) {
             $currentToken = $tokens[$index];
@@ -47,6 +66,14 @@ class Util {
         return null;
     }
 
+    /**
+     *
+     * @param array<int, array<string, mixed>>  $tokens
+     * @param int $position
+     * @param array<string> $types
+     *
+     * @return int|null
+     */
     public static function searchForward(array $tokens, int $position, array $types): ?int {
         $tokenCount = count($tokens);
         for ($index = $position; $index < $tokenCount; $index++) {
@@ -58,6 +85,13 @@ class Util {
         return null;
     }
 
+    /**
+     *
+     * @param array<int, array<string, mixed>>  $tokens
+     * @param int $position
+     *
+     * @return int
+     */
     public static function skipWhitespace(array $tokens, int $position): int {
 
         while ($tokens[$position]['type'] === 'T_WHITESPACE') {
@@ -67,6 +101,15 @@ class Util {
         return $position;
     }
 
+    /**
+     *
+     * @param array<int, array<string, mixed>>  $tokens
+     * @param array<string> $types
+     * @param int $from
+     * @param int $to
+     *
+     * @return int|null
+     */
     public static function find(array $tokens, array $types, int $from, int $to): ?int {
         for ($index = $from; $index < $to; $index++) {
             if (\in_array($tokens[$index]['type'], $types)) {
@@ -80,7 +123,7 @@ class Util {
     /**
      * Skip over declare strict call.
      *
-     * @param array $tokens
+     * @param array<int, array<string, mixed>> $tokens
      * @param int $position
      * @return int
      */

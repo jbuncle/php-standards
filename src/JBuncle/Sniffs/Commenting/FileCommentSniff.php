@@ -32,7 +32,9 @@ class FileCommentSniff implements Sniff {
      * @return void|int
      */
     public function process(File $phpcsFile, $stackPtr) {
+        /** @var array<int, array<string, mixed>> $tokens */
         $tokens = $phpcsFile->getTokens();
+        /* @phan-suppress-next-line PhanTypeMismatchArgument */
         $commentStart = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
 
         $commentStart = Util::skipDeclaration($tokens, $stackPtr + 1);
@@ -43,13 +45,20 @@ class FileCommentSniff implements Sniff {
         }
 
         if (isset($tokens[$commentStart]['comment_closer']) === false ||
-                ($tokens[$tokens[$commentStart]['comment_closer']]['content'] === '' && $tokens[$commentStart]['comment_closer'] === ($phpcsFile->numTokens - 1))
+                ($tokens[$tokens[$commentStart]['comment_closer']]['content'] === '' &&
+                $tokens[$commentStart]['comment_closer'] === ($phpcsFile->numTokens - 1))
         ) {
             // Don't process an unfinished file comment during live coding.
             return ($phpcsFile->numTokens + 1);
         }
 
         $commentStringPos = $this->findNext($tokens, $commentStart, ['T_DOC_COMMENT_STRING', 'T_DOC_COMMENT_CLOSE_TAG']);
+
+        if ($commentStringPos === null) {
+            // No comment found
+            $this->handleMissingFileCommentString($phpcsFile, $commentStart);
+            return ($phpcsFile->numTokens + 1);
+        }
 
         if ($tokens[$commentStringPos]['type'] !== 'T_DOC_COMMENT_STRING') {
             // No comment string
@@ -71,6 +80,14 @@ class FileCommentSniff implements Sniff {
         return ($phpcsFile->numTokens + 1);
     }
 
+    /**
+     *
+     * @param array<int, array<string, mixed>> $tokens
+     * @param int $position
+     * @param array<string> $types
+     *
+     * @return int|null
+     */
     private function findNext(array $tokens, int $position, array $types): ?int {
         $tokenCount = count($tokens);
         while ($position < $tokenCount) {

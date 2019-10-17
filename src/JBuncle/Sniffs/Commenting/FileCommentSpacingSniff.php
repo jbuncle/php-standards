@@ -5,7 +5,6 @@ use JBuncle\Helpers\Util;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use const T_DOC_COMMENT_WHITESPACE;
-use function count;
 
 /**
  * FileCommentSniff
@@ -33,10 +32,17 @@ class FileCommentSpacingSniff implements Sniff {
      * @return void|int
      */
     public function process(File $phpcsFile, $stackPtr) {
+        /** @var array<int, array<string, mixed>> $tokens */
         $tokens = $phpcsFile->getTokens();
         $currentToken = $tokens[$stackPtr];
 
-        $nextToken = $tokens[Util::skipForward($tokens, $stackPtr, ['T_DOC_COMMENT_WHITESPACE'])];
+        $nextTokenIndex = Util::skipForward($tokens, $stackPtr, ['T_DOC_COMMENT_WHITESPACE']);
+        if ($nextTokenIndex === null) {
+            // Somethings gone much worse than some spacing.
+            return;
+        }
+
+        $nextToken = $tokens[$nextTokenIndex];
         if (in_array($nextToken['type'], ['T_DOC_COMMENT_STAR', 'T_DOC_COMMENT_CLOSE_TAG'])) {
             // Skip whitespace before comment star
             return;

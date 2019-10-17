@@ -38,6 +38,12 @@ class ClassCommentSniff implements Sniff {
             'T_ABSTRACT',
             'T_FINAL',
         ]);
+        if ($prevTokenIndex === null) {
+            // No class comment found
+            $this->handleMissingClassComment($phpcsFile, $stackPtr);
+            return $stackPtr;
+        }
+
         $prevToken = $tokens[$prevTokenIndex];
 
         if ($prevToken['type'] !== "T_DOC_COMMENT_CLOSE_TAG") {
@@ -48,10 +54,22 @@ class ClassCommentSniff implements Sniff {
 
         $commentStart = Util::searchBack($tokens, $stackPtr, ['T_COMMENT', 'T_DOC_COMMENT_OPEN_TAG']);
 
+        if ($commentStart === null) {
+            // No comment string
+            $this->handleMissingClassCommentString($phpcsFile, $stackPtr);
+            return ($phpcsFile->numTokens + 1);
+        }
+
         $commentStringPos = Util::searchForward($tokens, $commentStart, [
                     'T_DOC_COMMENT_STRING',
                     'T_DOC_COMMENT_CLOSE_TAG',
         ]);
+
+        if ($commentStringPos === null) {
+            // No comment string
+            $this->handleMissingClassCommentString($phpcsFile, $stackPtr);
+            return ($phpcsFile->numTokens + 1);
+        }
 
         if ($tokens[$commentStringPos]['type'] !== 'T_DOC_COMMENT_STRING') {
             // No comment string
