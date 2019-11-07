@@ -6,7 +6,6 @@ stages:
 cache:
   paths:
     - vendor/
-    - composer.lock
 
 lint_php:
     stage: check
