@@ -63,7 +63,7 @@ class ClassHasConstructorSniff implements Sniff {
         if ($constructorPos === null) {
             // No constructor
 
-            $this->handleMissingConstructor($phpcsFile, $classOpener + 1);
+            $this->handleMissingConstructor($phpcsFile, intval($classOpener + 1));
         }
     }
 
