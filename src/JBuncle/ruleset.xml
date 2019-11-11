@@ -4,5 +4,5 @@
     <rule ref="JBuncle.Commenting.FileCommentSpacing" />
     <rule ref="JBuncle.Commenting.FileComment" />
     <rule ref="JBuncle.Commenting.ClassComment" />
-    <!--<rule ref="JBuncle.Commenting.ClassComment" />-->
+    <rule ref="JBuncle.CodeErrors.MemberInitialisation" />
 </ruleset>

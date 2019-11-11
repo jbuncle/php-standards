@@ -94,7 +94,7 @@ class Util {
      */
     public static function skipWhitespace(array $tokens, int $position): int {
 
-        while ($tokens[$position]['type'] === 'T_WHITESPACE') {
+        while (in_array($tokens[$position]['type'], ['T_WHITESPACE','T_DOC_COMMENT_WHITESPACE'])) {
             $position++;
         }
 
