@@ -5,5 +5,5 @@
     <rule ref="JBuncle.Commenting.FileComment" />
     <rule ref="JBuncle.Commenting.ClassComment" />
     <rule ref="JBuncle.CodeErrors.MemberInitialisation" />
-    <rule ref="JBuncle.CodeErrors.ConstructorCallsParent" />
+    <rule ref="JBuncle.CodeErrors.ClassHasConstructor" />
 </ruleset>
