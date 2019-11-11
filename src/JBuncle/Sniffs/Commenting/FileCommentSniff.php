@@ -13,6 +13,9 @@ use function count;
  */
 class FileCommentSniff implements Sniff {
 
+    public function __construct() {
+    }
+
     /**
      *
      * @return array<mixed>

@@ -13,6 +13,9 @@ use const T_DOC_COMMENT_WHITESPACE;
  */
 class FileCommentSpacingSniff implements Sniff {
 
+    public function __construct() {
+    }
+
     /**
      *
      * @return array<mixed>

@@ -8,6 +8,9 @@ namespace JBuncle\Helpers;
  */
 class Util {
 
+    public function __construct() {
+    }
+
     /**
      * Go backward until we find a token that doesn't match the ones defined.
      *

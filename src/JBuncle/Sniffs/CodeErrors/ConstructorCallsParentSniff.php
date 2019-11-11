@@ -12,6 +12,9 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 class ConstructorCallsParentSniff implements Sniff {
 
+    public function __construct() {
+    }
+
     /**
      *
      * @return array<mixed>
