@@ -6,7 +6,7 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * MemberInitialisation
+ * MemberInitialisation - Ensure that class members are initialised in the constructor.
  *
  * @author jbuncle
  */
