@@ -2,6 +2,7 @@
 <ruleset name="php-standards">
     
     <rule ref="./src/JBuncle/ruleset.xml"/>
+    <rule ref="./src/pherome-phpcs-security-audit.xml"/>
         
     <exclude-pattern>*/vendor/*</exclude-pattern>
     <exclude-pattern>*.js</exclude-pattern>
