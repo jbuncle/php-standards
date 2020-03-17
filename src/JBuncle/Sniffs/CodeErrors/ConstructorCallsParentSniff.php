@@ -111,6 +111,12 @@ class ConstructorCallsParentSniff implements Sniff {
 
             // Found
             $memberNamePos = Util::skipForward($tokens, $position + 1, ['T_WHITESPACE', 'T_DOUBLE_COLON']);
+
+            if ($memberNamePos === null) {
+                // Treat as missing
+                return false;
+            }
+
             $memberNameToken = $tokens[$memberNamePos];
             if ($memberNameToken['content'] === '__construct') {
                 // Not an assignment

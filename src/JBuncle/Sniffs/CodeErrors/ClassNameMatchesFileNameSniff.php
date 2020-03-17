@@ -1,7 +1,4 @@
-<?php
-
-declare(strict_types=1);
-
+<?php declare(strict_types=1);
 namespace JBuncle\Sniffs\CodeErrors;
 
 use PHP_CodeSniffer\Files\File;
@@ -15,7 +12,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 class ClassNameMatchesFileNameSniff implements Sniff {
 
     public function __construct() {
-        
+
     }
 
     /**
@@ -42,26 +39,28 @@ class ClassNameMatchesFileNameSniff implements Sniff {
         if ($this->getClassesCount($tokens) > 1) {
             return;
         }
+
         $currentToken = $tokens[$stackPtr];
         $this->processClass($phpcsFile, $stackPtr, $currentToken);
 
         return ($phpcsFile->numTokens + 1);
     }
 
-    
     /**
-     * 
-     * @param array $tokens
+     *
+     * @param array<int,mixed> $tokens
      * @return int
      */
     private function getClassesCount(array $tokens): int {
         $count = 0;
-        for ($index = 0; $index < count($tokens); $index++) {
+        $len = count($tokens);
+        for ($index = 0; $index < $len; $index++) {
             $token = $tokens[$index];
             if ($token['type'] === 'T_CLASS') {
                 $count++;
             }
         }
+
         return $count;
     }
 
@@ -73,37 +72,49 @@ class ClassNameMatchesFileNameSniff implements Sniff {
      */
     private function processClass(File $phpcsFile, int $pos, array $classToken): void {
         $tokens = $phpcsFile->getTokens();
-        for ($index = $pos; $index < count($tokens); $index++) {
-            $token = $tokens[$index];
-            if ($token['type'] === 'T_STRING') {
-                $classNameTokenIndex = $index;
-                break;
-            }
-        }
+        $classNameTokenIndex = $this->getClassNameTokenIndex($tokens, $pos);
 
         if ($classNameTokenIndex !== null) {
             // No constructor
-            $classNameToken = $tokens[$index];
+            $classNameToken = $tokens[$classNameTokenIndex];
             $className = $classNameToken['content'];
 
             $fileName = $this->getFileName($phpcsFile);
             if (strcmp($className, $fileName) !== 0) {
-                $this->handleBadClassName($phpcsFile, intval($index), $className, $fileName);
+                $this->handleBadClassName($phpcsFile, $classNameTokenIndex, $className, $fileName);
             }
         }
     }
 
-    private function getFileName($phpcsFile): string {
+    /**
+     *
+     * @param array<int,mixed> $tokens
+     * @param int $pos
+     * @return int|null
+     */
+    private function getClassNameTokenIndex(array $tokens, int $pos): ?int {
+        $len = count($tokens);
+        for ($index = $pos; $index < $len; $index++) {
+            $token = $tokens[$index];
+            if ($token['type'] === 'T_STRING') {
+                return $index;
+            }
+        }
+
+        return null;
+    }
+
+    private function getFileName(File $phpcsFile): string {
         return basename($phpcsFile->getFilename(), '.php');
     }
 
     private function handleBadClassName(File $phpcsFile, int $classOpener, string $className, string $fileName): void {
 
         $phpcsFile->addError("Class '$className' doesn't match file name '$fileName'", $classOpener, 'ClassFileMisMatch');
-//        $fix = $phpcsFile->addFixableError("Class doesn't match file name", $classOpener, 'ClassFileMisMatch');
-//        if ($fix === true) {
-//            $phpcsFile->fixer->addContent($classOpener, $fileName);
-//        }
+        //        $fix = $phpcsFile->addFixableError("Class doesn't match file name", $classOpener, 'ClassFileMisMatch');
+        //        if ($fix === true) {
+        //            $phpcsFile->fixer->addContent($classOpener, $fileName);
+        //        }
 
         $phpcsFile->recordMetric($classOpener, 'Class name correct', 'no');
     }

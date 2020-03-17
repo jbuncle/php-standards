@@ -1,7 +1,4 @@
-<?php
-
-declare(strict_types=1);
-
+<?php declare(strict_types=1);
 namespace JBuncle\Sniffs\CodeErrors;
 
 use Iterator;
@@ -18,7 +15,7 @@ use function count;
 class OneClassPerFileSniff implements Sniff {
 
     public function __construct() {
-        
+
     }
 
     /**
@@ -47,8 +44,13 @@ class OneClassPerFileSniff implements Sniff {
             if ($found) {
                 // More than one
                 $classNameTokenIndex = Util::searchForward($tokens, $classIndex, ['T_STRING']);
-                $classNameToken = $tokens[$classNameTokenIndex];
-                $className = $classNameToken['content'];
+                if ($classNameTokenIndex !== null) {
+                    $classNameToken = $tokens[$classNameTokenIndex];
+                    $className = $classNameToken['content'];
+                } else {
+                    $className = '';
+                }
+
                 $this->handleMultipleClass($phpcsFile, $classIndex, $className);
             } else {
                 $found = true;
@@ -58,8 +60,14 @@ class OneClassPerFileSniff implements Sniff {
         return ($phpcsFile->numTokens + 1);
     }
 
+    /**
+     *
+     * @param array<int,mixed> $tokens
+     * @return Iterator
+     */
     private function findClasses(array $tokens): Iterator {
-        for ($index = 0; $index < count($tokens); $index++) {
+        $len = count($tokens);
+        for ($index = 0; $index < $len; $index++) {
             $token = $tokens[$index];
             if ($token['type'] === 'T_CLASS') {
                 yield $index;

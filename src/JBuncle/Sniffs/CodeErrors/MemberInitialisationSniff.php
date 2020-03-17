@@ -155,6 +155,10 @@ class MemberInitialisationSniff implements Sniff {
 
             // Found
             $memberNamePos = Util::skipForward($tokens, $position + 1, ['T_WHITESPACE', 'T_OBJECT_OPERATOR']);
+            if ($memberNamePos === null) {
+                continue;
+            }
+
             $memberNameToken = $tokens[$memberNamePos];
             if ($memberNameToken['type'] !== 'T_STRING') {
                 // Not an assignment
@@ -163,6 +167,10 @@ class MemberInitialisationSniff implements Sniff {
 
             // Continue to check assignment actually occurs (i.e. not $this->thing;).
             $assignmentOperatorPos = Util::skipForward($tokens, intval($memberNamePos + 1), ['T_WHITESPACE']);
+            if ($assignmentOperatorPos === null) {
+                continue;
+            }
+
             $assignmentOperatorToken = $tokens[$assignmentOperatorPos];
             if ($assignmentOperatorToken['type'] !== 'T_EQUAL') {
                 continue;
