@@ -6,4 +6,6 @@
     <rule ref="JBuncle.Commenting.ClassComment" />
     <rule ref="JBuncle.CodeErrors.MemberInitialisation" />
     <rule ref="JBuncle.CodeErrors.ClassHasConstructor" />
+    <rule ref="JBuncle.CodeErrors.ClassNameMatchesFileName" />
+    <rule ref="JBuncle.CodeErrors.OneClassPerFile" />
 </ruleset>
