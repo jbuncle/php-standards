@@ -26,7 +26,10 @@ phan:
     script:
         - composer global config http-basic.nexus.jbuncle.co.uk composer-publisher $NEXUS_PASS 
         - composer install --no-dev
-        - phan
+        - phan --target-php-version=7.1
+        - phan --target-php-version=7.2
+        - phan --target-php-version=7.3
+        - phan --target-php-version=7.4
 
 tag:
     stage: deploy
