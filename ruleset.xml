@@ -18,6 +18,9 @@
         <properties>
             <property name="enableEachParameterAndReturnInspection" value="1"/>
         </properties>
+        
+        <!-- This rule is desirable on PHP8 -->
+        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint"/>
     </rule>
     
     <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
