@@ -26,7 +26,7 @@ phpcs:
     dependencies:
         - vendor
     script:
-        - vendor/bin/phpcs -n -s --standard=php-standards ./src
+        - vendor/bin/phpcs -n -s --standard=./ruleset.xml ./src
 
 phan:
     stage: check
