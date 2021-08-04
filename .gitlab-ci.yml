@@ -1,41 +1,46 @@
 
 stages:
+    - deps
     - check
+    - build
     - deploy
-    
+
 cache:
   paths:
-    - vendor/
+    - /root/.cache/composer/
 
-lint_php:
-    stage: check
-    image: cyberpearuk/php-build-docker
-    script: phplint --exclude=vendor ./
-
-phpcs:
-    stage: check
+vendor:
+    stage: deps
     image: cyberpearuk/php-build-docker
     script:
         - composer global config http-basic.nexus.jbuncle.co.uk composer-publisher $NEXUS_PASS 
         - composer install
-        - vendor/bin/phpcs -n -s --standard=./ruleset.xml ./src
+    artifacts:
+        expire_in: 1 day
+        paths:
+            - vendor/
+
+phpcs:
+    stage: check
+    image: cyberpearuk/php-build-docker
+    dependencies:
+        - vendor
+    script:
+        - vendor/bin/phpcs -n -s --standard=php-standards ./src
 
 phan:
     stage: check
-    image: cyberpearuk/php-build-docker
+    image: jbuncle/php-build-phan
+    dependencies:
+        - vendor
     script:
-        - composer global config http-basic.nexus.jbuncle.co.uk composer-publisher $NEXUS_PASS 
-        - composer install --no-dev
-        - phan --target-php-version=7.1
-        - phan --target-php-version=7.2
-        - phan --target-php-version=7.3
         - phan --target-php-version=7.4
-
+        - phan --target-php-version=8.0
 tag:
     stage: deploy
     image: jbuncle/php-autosemver
+    dependencies: []
     script:
-        - composer global config http-basic.nexus.jbuncle.co.uk composer-publisher $NEXUS_PASS 
         - tag
     only:
         refs:
@@ -53,4 +58,4 @@ deploy_tag:
          --ignore="/^(nbproject.*|\.gitlab\-ci\.yml)$/"
     only:
         - tags
-
+    dependencies: []
