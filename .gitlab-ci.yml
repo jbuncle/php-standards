@@ -36,6 +36,7 @@ phan:
     script:
         - phan --target-php-version=7.4
         - phan --target-php-version=8.0
+
 tag:
     stage: deploy
     image: jbuncle/php-autosemver
