@@ -33,7 +33,7 @@ phan:
 
 tag:
     stage: deploy
-    image: docker.jbuncle.co.uk/jbuncle/php-autosemver
+    image: jbuncle/php-autosemver
     script:
         - composer global config http-basic.nexus.jbuncle.co.uk composer-publisher $NEXUS_PASS 
         - tag
