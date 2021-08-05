@@ -4,9 +4,6 @@ stages:
     - check
     - build
     - deploy
-
-except:
-  - tags
     
 cache:
   paths:
@@ -18,6 +15,8 @@ vendor:
     script:
         - composer global config http-basic.nexus.jbuncle.co.uk composer-publisher $NEXUS_PASS 
         - composer install
+    except:
+      - tags
     artifacts:
         expire_in: 1 day
         paths:
