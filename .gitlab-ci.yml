@@ -5,6 +5,9 @@ stages:
     - build
     - deploy
 
+except:
+  - tags
+    
 cache:
   paths:
     - /root/.cache/composer/
@@ -37,26 +40,39 @@ phan:
         - phan --target-php-version=7.4
         - phan --target-php-version=8.0
 
-tag:
-    stage: deploy
+version:
+    stage: build
     image: jbuncle/php-autosemver
     dependencies: []
     script:
-        - tag
+        - echo "VERSION=$(next-version)" >> build.env
+        - cat build.env
+    artifacts:
+        reports:
+            dotenv: build.env
     only:
         refs:
             - master
 
+tag:
+    stage: deploy
+    image: jbuncle/php-autosemver
+    needs:
+        - job: version
+            artifacts: true
+    script:
+        - git-tag ${VERSION}
+
 deploy_tag:
     stage: deploy
     image: jbuncle/composer-nexus-upload
+    needs:
+        - job: version
+            artifacts: true
     script:
         - nexus-upload
          --repository=https://nexus.jbuncle.co.uk/repository/composer-private/ 
          --username=composer-publisher 
          --password=$NEXUS_PASS 
-         --version=$CI_COMMIT_TAG
+         --version=${VERSION}
          --ignore="/^(nbproject.*|\.gitlab\-ci\.yml)$/"
-    only:
-        - tags
-    dependencies: []
