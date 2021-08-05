@@ -15,13 +15,14 @@ vendor:
     script:
         - composer global config http-basic.nexus.jbuncle.co.uk composer-publisher $NEXUS_PASS 
         - composer install
-    except:
-      - tags
     artifacts:
         expire_in: 1 day
         paths:
             - vendor/
-
+    only:
+        refs:
+            - branches
+      
 phpcs:
     stage: check
     image: cyberpearuk/php-build-docker
@@ -29,6 +30,9 @@ phpcs:
         - vendor
     script:
         - vendor/bin/phpcs -n -s --standard=./ruleset.xml ./src
+    only:
+        refs:
+            - branches
 
 phan:
     stage: check
@@ -38,6 +42,9 @@ phan:
     script:
         - phan --target-php-version=7.4
         - phan --target-php-version=8.0
+    only:
+        refs:
+            - branches
 
 version:
     stage: build
@@ -61,6 +68,9 @@ tag:
           artifacts: true
     script:
         - git-tag ${VERSION}
+    only:
+        refs:
+            - master
 
 deploy_tag:
     stage: deploy
@@ -75,3 +85,6 @@ deploy_tag:
          --password=$NEXUS_PASS 
          --version=${VERSION}
          --ignore="/^(nbproject.*|\.gitlab\-ci\.yml)$/"
+    only:
+        refs:
+            - master
