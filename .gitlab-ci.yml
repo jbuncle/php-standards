@@ -59,7 +59,7 @@ tag:
     image: jbuncle/php-autosemver
     needs:
         - job: version
-            artifacts: true
+          artifacts: true
     script:
         - git-tag ${VERSION}
 
@@ -68,7 +68,7 @@ deploy_tag:
     image: jbuncle/composer-nexus-upload
     needs:
         - job: version
-            artifacts: true
+          artifacts: true
     script:
         - nexus-upload
          --repository=https://nexus.jbuncle.co.uk/repository/composer-private/ 
