@@ -3,53 +3,74 @@ stages:
     - deps
     - check
     - build
-    - deploy
-    
-cache:
-  paths:
-    - /root/.cache/composer/
+    - version
+    - pack
+    - release
 
-vendor:
-    stage: deps
-    image: cyberpearuk/php-build-docker
-    script:
-        - composer global config http-basic.nexus.jbuncle.co.uk composer-publisher $NEXUS_PASS 
-        - composer install
-    artifacts:
-        expire_in: 1 day
-        paths:
-            - vendor/
-    only:
-        refs:
-            - branches
+cache:
+    - key: composer-cache
+      paths:
+        - /root/.cache/composer/
+        - /root/.composer/cache
+      policy: pull-push
       
-phpcs:
-    stage: check
-    image: cyberpearuk/php-build-docker
-    dependencies:
+    - key: $CI_COMMIT_REF_SLUG
+      paths:
         - vendor
-    script:
-        - vendor/bin/phpcs -n -s --standard=./ruleset.xml ./src
-    only:
-        refs:
-            - branches
+      policy: pull-push
 
 phan:
     stage: check
     image: jbuncle/php-build-phan
-    dependencies:
-        - vendor
-    script:
-        - phan --target-php-version=7.4
-        - phan --target-php-version=8.0
     only:
         refs:
             - branches
+    before_script:
+        - composer global config github-oauth.github.com $GITHUB_TOKEN 
+        - composer global config http-basic.nexus.jbuncle.co.uk composer-publisher $NEXUS_PASS 
+        - composer install --ignore-platform-reqs --prefer-dist
+    script:
+        - phan --target-php-version=7.4
+        - phan --target-php-version=8.0
+
+phpcs:
+    stage: check
+    image: cyberpearuk/php-build-docker
+    only:
+        refs:
+            - branches
+    before_script:
+        - composer global config github-oauth.github.com $GITHUB_TOKEN 
+        - composer global config http-basic.nexus.jbuncle.co.uk composer-publisher $NEXUS_PASS 
+        - composer install --ignore-platform-reqs --prefer-dist
+    script:
+        - vendor/bin/phpcs -n -s --standard=php-standards ./src
+        - vendor/bin/phpcs -n -s --standard=php-standards ./tests
+
+phpunit:
+    stage: check
+    image: cyberpearuk/php-build-docker
+    only:
+        refs:
+            - branches
+    before_script:
+        - composer global config github-oauth.github.com $GITHUB_TOKEN 
+        - composer global config http-basic.nexus.jbuncle.co.uk composer-publisher $NEXUS_PASS 
+        - composer install --ignore-platform-reqs --prefer-dist
+    script:
+        - vendor/bin/phpunit --configuration phpunit.xml --coverage-text --colors=never
+    coverage: '/^\s*Lines:\s*\d+.\d+\%/'
 
 version:
-    stage: build
+    stage: version
     image: jbuncle/php-autosemver
-    dependencies: []
+    needs:
+        - job: phpcs
+          artifacts: false
+        - job: phan
+          artifacts: false
+        - job: phpunit
+          artifacts: false
     script:
         - echo "VERSION=$(next-version)" >> build.env
         - cat build.env
@@ -60,8 +81,8 @@ version:
         refs:
             - master
 
-tag:
-    stage: deploy
+git-tag:
+    stage: release
     image: jbuncle/php-autosemver
     needs:
         - job: version
@@ -72,8 +93,8 @@ tag:
         refs:
             - master
 
-deploy_tag:
-    stage: deploy
+nexus-publish:
+    stage: release
     image: jbuncle/composer-nexus-upload
     needs:
         - job: version
@@ -84,7 +105,7 @@ deploy_tag:
          --username=composer-publisher 
          --password=$NEXUS_PASS 
          --version=${VERSION}
-         --ignore="/^(nbproject.*|\.gitlab\-ci\.yml)$/"
+         --ignore="/^(vendor|nbproject|\.gitlab\-ci\.yml|\.phan|tests|phpunit\.xml)/"
     only:
         refs:
             - master
